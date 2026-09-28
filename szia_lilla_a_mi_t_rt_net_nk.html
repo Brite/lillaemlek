@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Szia Lilla! ❤️ - A Mi Történetünk</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        .font-serif-cinema { font-family: 'Cormorant Garamond', serif; }
+        .font-handwriting { font-family: 'Caveat', cursive; }
+        .font-sans-clean { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        /* Glassmorphism styling */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 25px 50px -12px rgba(225, 29, 72, 0.15);
+        }
+
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(244, 63, 94, 0.25);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Heart pulse animation */
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.5); }
+            50% { transform: scale(1.04); box-shadow: 0 0 35px 12px rgba(244, 63, 94, 0.3); }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 2.2s infinite ease-in-out;
+        }
+
+        /* Floating elements */
+        @keyframes float-soft {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(3deg); }
+        }
+        .animate-float {
+            animation: float-soft 4s ease-in-out infinite;
+        }
+
+        /* Cinematic message transitions */
+        .cinema-text-enter {
+            animation: cinemaIn 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .cinema-text-exit {
+            animation: cinemaOut 0.7s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+        }
+
+        @keyframes cinemaIn {
+            0% { opacity: 0; transform: translateY(28px) scale(0.95); filter: blur(10px); }
+            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
+        }
+
+        @keyframes cinemaOut {
+            0% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
+            100% { opacity: 0; transform: translateY(-22px) scale(1.02); filter: blur(8px); }
+        }
+
+        /* Glowing text effect */
+        .text-glow-rose {
+            text-shadow: 0 0 25px rgba(251, 113, 133, 0.45), 0 0 50px rgba(225, 29, 72, 0.25);
+        }
+
+        body {
+            overflow: hidden;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body id="bodyBg" class="font-sans-clean bg-gradient-to-br from-rose-100 via-pink-100 to-red-100 min-h-screen h-screen w-screen flex flex-col justify-between items-center relative overflow-hidden text-slate-800 transition-colors duration-1000">
+
+    <!-- Background Music Player -->
+    <audio id="bgAudio" loop preload="auto">
+        <source src="bg-music.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Floating Interactive Background Canvas -->
+    <canvas id="romanticCanvas" class="absolute inset-0 z-0 pointer-events-none w-full h-full"></canvas>
+
+    <!-- Top Navigation Header -->
+    <header class="relative z-20 w-full max-w-lg px-5 pt-4 sm:pt-6 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+            <span id="headerTag" class="font-serif-cinema text-rose-800 font-semibold tracking-wider text-xl sm:text-2xl transition-colors duration-700">Lillának ❤️</span>
+        </div>
+
+        <!-- Audio & Sound Effect Toggles -->
+        <div class="flex items-center space-x-2">
+            <!-- Background Music Button -->
+            <button id="musicBtn" onclick="toggleBgMusic()" class="px-3 py-1.5 rounded-full glass-card flex items-center space-x-1.5 text-rose-600 font-medium text-xs shadow-sm hover:bg-white transition-all duration-300">
+                <i id="musicIcon" class="fa-solid fa-music text-rose-500"></i>
+                <span id="musicText">Zene: BE</span>
+            </button>
+
+            <!-- Warm Chime Toggle Button -->
+            <button id="soundToggleBtn" onclick="toggleChimeSound()" class="px-3 py-1.5 rounded-full glass-card flex items-center space-x-1.5 text-rose-600 font-medium text-xs shadow-sm hover:bg-white transition-all duration-300">
+                <i id="soundIcon" class="fa-solid fa-bell text-rose-500"></i>
+                <span id="soundText">Hang: BE</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Interactive Content Container -->
+    <main class="relative z-10 w-full max-w-lg px-5 flex-1 flex flex-col justify-center items-center my-auto">
+
+        <!-- LANDING SCREEN -->
+        <section id="landingScreen" class="w-full text-center transition-all duration-700 ease-in-out">
+            <div class="glass-card rounded-3xl p-7 sm:p-10 shadow-2xl relative overflow-hidden">
+                <div class="inline-block p-4 bg-rose-100/90 rounded-full mb-6 text-rose-500 text-4xl animate-float shadow-inner">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+                
+                <h1 class="font-serif-cinema text-3xl sm:text-4xl font-bold text-slate-800 mb-2 leading-tight">
+                    Szia Lilla! ❤️
+                </h1>
+                
+                <p class="font-handwriting text-2xl text-rose-600 mb-7 font-bold">
+                    Van valami, amit el kell mondanom... Engedd, hogy elmeséljem neked.
+                </p>
+
+                <!-- Requested Start Button Text -->
+                <button onclick="startCinematicStory()" class="animate-pulse-glow w-full py-4 px-6 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 text-white font-semibold rounded-2xl shadow-xl hover:shadow-rose-400/50 hover:scale-[1.02] active:scale-95 transition-all duration-300 flex items-center justify-center space-x-3 text-lg">
+                    <span>Lásd magad a szememmel</span>
+                    <i class="fa-solid fa-sparkles text-amber-200 text-base"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- CINEMATIC AUTOMATED MOVIE SCREEN -->
+        <section id="cinemaScreen" class="w-full hidden transition-all duration-1000 ease-in-out flex flex-col items-center justify-center">
+            
+            <!-- Dynamic Chapter / Section Badge Indicator -->
+            <div id="chapterBadge" class="mb-5 px-4 py-1.5 rounded-full bg-rose-950/70 border border-rose-500/30 text-rose-300 text-xs font-semibold tracking-widest uppercase backdrop-blur-md shadow-lg transition-all duration-500 text-center">
+                BEVEZETŐ • 1 / 8
+            </div>
+
+            <!-- Main Message Container -->
+            <div id="messageBox" class="w-full min-h-[220px] sm:min-h-[260px] flex items-center justify-center text-center px-3 my-auto">
+                <h2 id="cinemaText" class="font-serif-cinema text-2xl sm:text-4xl font-bold text-rose-100 leading-relaxed text-glow-rose tracking-wide">
+                    Szia Lilla!
+                </h2>
+            </div>
+
+            <!-- Soft floating glowing accent -->
+            <div class="mt-6 text-rose-400/60 text-base flex items-center space-x-3">
+                <span class="w-8 h-[1px] bg-rose-500/30"></span>
+                <i class="fa-solid fa-heart animate-pulse text-rose-400"></i>
+                <span class="w-8 h-[1px] bg-rose-500/30"></span>
+            </div>
+        </section>
+
+        <!-- FINAL OUTRO SCREEN -->
+        <section id="outroScreen" class="w-full hidden transition-all duration-1000 ease-in-out text-center">
+            <div class="glass-dark rounded-3xl p-8 shadow-2xl border border-rose-500/30">
+                <div class="inline-block p-4 bg-rose-500/20 text-rose-300 rounded-full mb-5 text-4xl animate-float">
+                    <i class="fa-solid fa-heart-circle-check"></i>
+                </div>
+
+                <h2 class="font-serif-cinema text-3xl sm:text-4xl font-bold text-rose-100 mb-3 text-glow-rose leading-snug">
+                    Köszönöm, hogy végignézted &lt;3
+                </h2>
+
+                <p class="font-handwriting text-2xl sm:text-3xl text-rose-300 mb-8 leading-relaxed">
+                    Gyere ide vissza bármikor, ha szükséged van ezt hallani.
+                </p>
+
+                <!-- Navigation Action Buttons -->
+                <div class="space-y-3">
+                    <button onclick="restartFromStart()" class="w-full py-3.5 px-6 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-medium rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all text-base flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Újrajátszás az elejétől</span>
+                    </button>
+
+                    <div class="grid grid-cols-2 gap-2 pt-2">
+                        <button onclick="jumpToChapter(0)" class="py-2.5 px-3 bg-white/10 hover:bg-white/15 text-rose-200 text-xs rounded-lg border border-white/10 transition-all">
+                            Bevezető
+                        </button>
+                        <button onclick="jumpToChapter(8)" class="py-2.5 px-3 bg-white/10 hover:bg-white/15 text-rose-200 text-xs rounded-lg border border-white/10 transition-all">
+                            Történetünk
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Timeline & Audio Controls -->
+    <footer class="relative z-20 w-full max-w-lg px-5 pb-5 text-center">
+        <!-- Cinema Bottom Player Bar -->
+        <div id="playerControls" class="hidden glass-dark rounded-2xl p-3.5 shadow-2xl backdrop-blur-2xl">
+            <!-- Overall Progress Bar -->
+            <div class="w-full bg-rose-950/80 h-1.5 rounded-full overflow-hidden mb-3">
+                <div id="progressBar" class="bg-gradient-to-r from-rose-500 via-pink-400 to-amber-300 h-full rounded-full transition-all duration-300 w-0"></div>
+            </div>
+
+            <div class="flex justify-between items-center px-1">
+                <!-- Replay / Prev -->
+                <button onclick="prevMessageManual()" class="text-rose-300/80 hover:text-rose-200 text-xs font-medium flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-all">
+                    <i class="fa-solid fa-backward-step"></i>
+                    <span>Előző</span>
+                </button>
+
+                <!-- Pause / Play Switcher -->
+                <button id="pausePlayBtn" onclick="togglePausePlay()" class="w-10 h-10 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 active:scale-95 transition-all">
+                    <i id="pausePlayIcon" class="fa-solid fa-pause text-sm"></i>
+                </button>
+
+                <!-- Skip Next -->
+                <button onclick="nextMessageManual()" class="text-rose-300/80 hover:text-rose-200 text-xs font-medium flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-all">
+                    <span>Következő</span>
+                    <i class="fa-solid fa-forward-step"></i>
+                </button>
+            </div>
+        </div>
+
+        <p id="footerSubtext" class="text-xs text-rose-500/80 font-handwriting text-lg mt-3">
+            Szeretettel készítve neked ✨
+        </p>
+    </footer>
+
+    <script>
+        /* ===================================================================
+           TELJES ÜZENET- ÉS FEJEZET ADATBÁZIS (Complete Exact Narrative)
+           =================================================================== */
+        const storyDataset = [
+            // BEVEZETŐ (Index 0-7)
+            { section: "BEVEZETŐ", text: "Szia Lilla!" },
+            { section: "BEVEZETŐ", text: "Mielőtt megértenéd, hogy miért is szeretlek..." },
+            { section: "BEVEZETŐ", text: "Akarom, hogy tudd:" },
+            { section: "BEVEZETŐ", text: "Ma is a legszebb lányként keltél fel," },
+            { section: "BEVEZETŐ", text: "És holnap is a legszebbként fogsz felkelni." },
+            { section: "BEVEZETŐ", text: "Ha pedig majd újra melletted kelhetek," },
+            { section: "BEVEZETŐ", text: "A legszerencsésebb srác leszek a földön." },
+            { section: "BEVEZETŐ", text: "Szóval kezdjük a legelején..." },
+
+            // FEJEZET 1: TÖRTÉNETÜNK LEGSZEBB KORSZAKA (Index 8-46)
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Hol is kezdjem..." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Tudod kedvesem, ezerszer átfutottuk már," },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "De valahogy mégis olyan különleges a kettőnk története." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Valahogy a modernkori igazi, megmaradt romantikát sikerült megtalálnunk." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Ami a legviccesebb, hogy sose gondoltam volna," },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Hogy az lesz életem szerelme, akit első randin leöntök," },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Majd egy órára rá már mindketten örülünk, hogy különváltunk." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "De valahogy ezért is szép ez az egész." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Mert míg a kokónak azt mondtam, hogy látni se akarlak többet," },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Mélyről egy olyan vonzódást éreztem, amit ezelőtt senkinél se." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Ezután kitérhetnék minden kis pillanatra, de inkább" },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Arra a pillanatra reflektálnék, amikor tényleg rádöbbentem, hogy" },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Veled ez a dolog igazi, és nem csak a külsőd az, ami vonz." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Ez a pillanat..." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Pedig..." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Nem a csillagnézés," },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Nem a koncertek," },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Hanem az a hazafelé út, miután elbúcsúztunk, mert költöztem haza." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Miért pont az?" },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Nos, a csillagnézés és koncert is jók voltak, de" },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Az az érzés, mikor már otthon ültem, hogy:" },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "\"vajon csak szórakozást kerestél," },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Vagy legbelül arra vágysz hogy valaki tényleg megszállottan szeressen?\"" },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "És tudod, arra döbbentem rá," },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Azért voltam nagyon boldog," },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Mert te megszállottan szerettél." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Úgy szerettél, mint akinek azon múlt aznapi jókedve, hogy" },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Vajon Dávid le tud-e jönni hétvégén hozzám." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "És sajnálom, hogy akkor ezt nem tudtam értékelni, hogy te valójában szeretsz." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Csak reménykedni tudok, hogy most vissza tudom adni ugyanezt a szeretetet," },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Mert te sokkal jobban megérdemelted volna, mint én." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Sajnos hülye voltam." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Kibaszott hülye, hogy szakítottam veled." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Ha mindennap bocsánatot kérnék, se lenne elég, hogy ez rendeződni tudjon bennem." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Lehet, hogy tényleg csak én vagyok ilyen naiv, hogy" },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Hiszek abban, hogy még szerethetjük egymást," },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "De addig próbálkozok, míg azzal neked nem ártok." },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Hisz ártottam már neked eleget," },
+            { section: "TÖRTÉNETÜNK LEGSZEBB KORSZAKA", text: "Soha többet nem tudnék neked, és nem is szeretnék." },
+
+            // BEFEJEZÉS (Index 47-54)
+            { section: "BEFEJEZÉS", text: "Nos, szerettem volna, hogy tisztán lásd, mennyire értékes lány vagy." },
+            { section: "BEFEJEZÉS", text: "Arra kérlek, hogy ha nem is velem, ne add le a voksod egy minimumra." },
+            { section: "BEFEJEZÉS", text: "Olyat keress magadnak, aki legalább feleannyira szeret, mint ahogy te szerettél engem." },
+            { section: "BEFEJEZÉS", text: "De te a duplájánál is többet érdemelnél." },
+            { section: "BEFEJEZÉS", text: "Szóval ez lett volna mára." },
+            { section: "BEFEJEZÉS", text: "Remélem, végigolvastad." },
+            { section: "BEFEJEZÉS", text: "Ma este is valószínű a közös képek ringatnak majd álomba." },
+            { section: "BEFEJEZÉS", text: "Ott hátha még egyszer veled lehetek." }
+        ];
+
+        // Compliments for background floating bubbles
+        const romanticCompliments = [
+            "Gyönyörű vagy ma is! ✨",
+            "Csodás a mosolyod 😊",
+            "Különleges vagy 💖",
+            "Ragyogsz! 🌟",
+            "A legszebb lány 💕",
+            "Hiányzol 🌸",
+            "Gondolok rád! 💌"
+        ];
+
+        // Player state variables
+        let currentIndex = 0;
+        let storyTimer = null;
+        let isPaused = false;
+        let isChimeEnabled = true;
+        let isBgMusicPlaying = false;
+        let isCinematicMode = false;
+        const READ_TIME_PER_MESSAGE = 4200; // 4.2 seconds reading time per line
+
+        /* ===================================================================
+           AUDIO HANDLING (Background MP3 + Warm Chime Audio API Synthesizer)
+           =================================================================== */
+        let audioCtx = null;
+        const bgAudio = document.getElementById('bgAudio');
+        bgAudio.volume = 0.35; // Soft gentle background volume
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        // Toggle background music play/pause
+        function toggleBgMusic() {
+            const musicText = document.getElementById('musicText');
+            const musicIcon = document.getElementById('musicIcon');
+
+            if (isBgMusicPlaying) {
+                bgAudio.pause();
+                isBgMusicPlaying = false;
+                musicText.innerText = "Zene: KI";
+                musicIcon.className = "fa-solid fa-volume-xmark text-slate-400";
+            } else {
+                bgAudio.play().then(() => {
+                    isBgMusicPlaying = true;
+                    musicText.innerText = "Zene: BE";
+                    musicIcon.className = "fa-solid fa-music text-rose-500 animate-bounce";
+                }).catch(err => {
+                    console.log("Audio file playback waiting for gesture or missing file:", err);
+                    playAmbientFallbackPad(); // Procedural audio fallback if local file absent
+                });
+            }
+        }
+
+        // Warm low-pass chime synthesizer
+        function playWarmChimeSound() {
+            if (!isChimeEnabled) return;
+
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                
+                // Warm pentatonic chord note frequencies
+                const notes = [369.99, 466.16, 554.37, 739.99]; 
+                const baseFreq = notes[Math.floor(Math.random() * notes.length)];
+                
+                // Oscillators for rich warm sound
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const filter = ctx.createBiquadFilter();
+                const gain = ctx.createGain();
+
+                osc1.type = 'sine';
+                osc2.type = 'triangle';
+                osc1.frequency.setValueAtTime(baseFreq, now);
+                osc2.frequency.setValueAtTime(baseFreq * 1.003, now); // Warm detune
+
+                // Low pass filter to keep it warm and non-harsh
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(1100, now);
+
+                // Envelope
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.exponentialRampToValueAtTime(0.09, now + 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
+
+                osc1.connect(filter);
+                osc2.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 1.85);
+                osc2.stop(now + 1.85);
+            } catch (e) {
+                console.log("Audio synthesis error:", e);
+            }
+        }
+
+        // Procedural ambient synth pad fallback if bg-music.mp3 isn't available
+        function playAmbientFallbackPad() {
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(220, ctx.currentTime);
+                gain.gain.setValueAtTime(0.02, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                isBgMusicPlaying = true;
+                document.getElementById('musicText').innerText = "Zene: BE";
+            } catch (e) {}
+        }
+
+        function toggleChimeSound() {
+            isChimeEnabled = !isChimeEnabled;
+            const soundText = document.getElementById('soundText');
+            const soundIcon = document.getElementById('soundIcon');
+
+            if (isChimeEnabled) {
+                soundText.innerText = "Hang: BE";
+                soundIcon.className = "fa-solid fa-bell text-rose-500";
+                getAudioContext();
+            } else {
+                soundText.innerText = "Hang: KI";
+                soundIcon.className = "fa-solid fa-bell-slash text-slate-400";
+            }
+        }
+
+        /* ===================================================================
+           CINEMATIC SEQUENCE ENGINE
+           =================================================================== */
+        function startCinematicStory() {
+            getAudioContext();
+            isCinematicMode = true;
+
+            // Attempt to start background audio gently
+            if (!isBgMusicPlaying) {
+                toggleBgMusic();
+            }
+
+            // Dark night sky background transition
+            document.getElementById('bodyBg').className = "font-sans-clean bg-gradient-to-br from-slate-950 via-rose-950 to-slate-900 min-h-screen h-screen w-screen flex flex-col justify-between items-center relative overflow-hidden text-rose-100 transition-colors duration-1000";
+            
+            // Hide landing elements
+            document.getElementById('landingScreen').classList.add('hidden');
+            document.getElementById('headerTag').className = "font-serif-cinema text-rose-300 font-semibold tracking-wider text-xl sm:text-2xl transition-colors duration-700";
+            document.getElementById('footerSubtext').classList.add('hidden');
+
+            // Show story screen and timeline controls
+            document.getElementById('cinemaScreen').classList.remove('hidden');
+            document.getElementById('outroScreen').classList.add('hidden');
+            document.getElementById('playerControls').classList.remove('hidden');
+
+            currentIndex = 0;
+            displayCurrentMessage();
+        }
+
+        function displayCurrentMessage() {
+            if (currentIndex >= storyDataset.length) {
+                finishStorySequence();
+                return;
+            }
+
+            const cinemaText = document.getElementById('cinemaText');
+            const chapterBadge = document.getElementById('chapterBadge');
+            const progressBar = document.getElementById('progressBar');
+
+            const item = storyDataset[currentIndex];
+
+            // Play warm chime sound
+            playWarmChimeSound();
+
+            // Update badge & progress bar
+            chapterBadge.innerText = `${item.section} • ${currentIndex + 1} / ${storyDataset.length}`;
+            const progressPct = ((currentIndex + 1) / storyDataset.length) * 100;
+            progressBar.style.width = `${progressPct}%`;
+
+            // Text transition (exit -> update -> enter)
+            cinemaText.classList.remove('cinema-text-enter');
+            cinemaText.classList.add('cinema-text-exit');
+
+            setTimeout(() => {
+                cinemaText.innerText = item.text;
+                cinemaText.classList.remove('cinema-text-exit');
+                cinemaText.classList.add('cinema-text-enter');
+            }, 350);
+
+            // Timer for next slide
+            clearTimeout(storyTimer);
+            if (!isPaused) {
+                storyTimer = setTimeout(() => {
+                    currentIndex++;
+                    displayCurrentMessage();
+                }, READ_TIME_PER_MESSAGE);
+            }
+        }
+
+        function togglePausePlay() {
+            isPaused = !isPaused;
+            const icon = document.getElementById('pausePlayIcon');
+            if (isPaused) {
+                icon.className = "fa-solid fa-play text-sm ml-0.5";
+                clearTimeout(storyTimer);
+            } else {
+                icon.className = "fa-solid fa-pause text-sm";
+                currentIndex++;
+                displayCurrentMessage();
+            }
+        }
+
+        function nextMessageManual() {
+            clearTimeout(storyTimer);
+            if (currentIndex < storyDataset.length - 1) {
+                currentIndex++;
+                displayCurrentMessage();
+            } else {
+                finishStorySequence();
+            }
+        }
+
+        function prevMessageManual() {
+            clearTimeout(storyTimer);
+            if (currentIndex > 0) {
+                currentIndex--;
+                displayCurrentMessage();
+            }
+        }
+
+        function jumpToChapter(index) {
+            currentIndex = index;
+            document.getElementById('outroScreen').classList.add('hidden');
+            document.getElementById('cinemaScreen').classList.remove('hidden');
+            document.getElementById('playerControls').classList.remove('hidden');
+            isPaused = false;
+            document.getElementById('pausePlayIcon').className = "fa-solid fa-pause text-sm";
+            displayCurrentMessage();
+        }
+
+        function restartFromStart() {
+            jumpToChapter(0);
+        }
+
+        function finishStorySequence() {
+            clearTimeout(storyTimer);
+            document.getElementById('cinemaScreen').classList.add('hidden');
+            document.getElementById('playerControls').classList.add('hidden');
+            document.getElementById('outroScreen').classList.remove('hidden');
+        }
+
+        /* Touch Gesture Support for Mobile Swiping */
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        document.addEventListener('touchend', e => {
+            if (!isCinematicMode) return;
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) {
+                nextMessageManual(); // Swipe left -> Next
+            }
+            if (touchEndX > touchStartX + swipeThreshold) {
+                prevMessageManual(); // Swipe right -> Previous
+            }
+        }
+
+        /* ===================================================================
+           CANVAS ANIMATION (Floating Hearts, Star Dust & Compliment Bubbles)
+           =================================================================== */
+        const canvas = document.getElementById('romanticCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const floatingHearts = [];
+        const floatingTexts = [];
+
+        class FloatingHeart {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 50;
+                this.size = Math.random() * 10 + 6;
+                this.speed = Math.random() * 0.9 + 0.4;
+                this.opacity = Math.random() * 0.5 + 0.25;
+                this.swing = Math.random() * 2;
+                this.swingSpeed = Math.random() * 0.02 + 0.01;
+            }
+
+            update() {
+                this.y -= this.speed;
+                this.swing += this.swingSpeed;
+                this.x += Math.sin(this.swing) * 0.5;
+
+                if (this.y < -30) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                if (isCinematicMode) {
+                    // Soft glowing star dust particles in cinematic mode
+                    ctx.beginPath();
+                    ctx.fillStyle = `rgba(251, 207, 232, ${this.opacity * 0.75})`;
+                    ctx.arc(this.x, this.y, this.size * 0.22, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    // Soft pink hearts on landing page
+                    drawHeart(this.x, this.y, this.size, `rgba(244, 63, 94, ${this.opacity})`);
+                }
+                ctx.restore();
+            }
+        }
+
+        class FloatingTextBubble {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.text = romanticCompliments[Math.floor(Math.random() * romanticCompliments.length)];
+                this.x = Math.random() * (canvas.width - 160) + 20;
+                this.y = canvas.height + Math.random() * 80;
+                this.speed = Math.random() * 0.45 + 0.3;
+                this.opacity = 0;
+                this.maxOpacity = Math.random() * 0.45 + 0.35;
+                this.fadeIn = true;
+                this.fontSize = 12.5;
+            }
+
+            update() {
+                if (isCinematicMode) return; // Hide bubbles during story mode
+
+                this.y -= this.speed;
+
+                if (this.fadeIn) {
+                    this.opacity += 0.007;
+                    if (this.opacity >= this.maxOpacity) this.fadeIn = false;
+                } else if (this.y < canvas.height * 0.35) {
+                    this.opacity -= 0.007;
+                }
+
+                if (this.y < -40 || this.opacity <= 0) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                if (isCinematicMode || this.opacity <= 0) return;
+                ctx.save();
+                ctx.font = `600 ${this.fontSize}px 'Plus Jakarta Sans', sans-serif`;
+                
+                const textWidth = ctx.measureText(this.text).width;
+                const padX = 12;
+                const padY = 5;
+                
+                // Glass bubble background
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity * 0.9})`;
+                ctx.beginPath();
+                ctx.roundRect(this.x - padX, this.y - this.fontSize, textWidth + (padX * 2), this.fontSize + (padY * 2), 14);
+                ctx.fill();
+                
+                ctx.strokeStyle = `rgba(244, 63, 94, ${this.opacity * 0.2})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                ctx.fillStyle = `rgba(225, 29, 72, ${this.opacity})`;
+                ctx.fillText(this.text, this.x, this.y);
+                ctx.restore();
+            }
+        }
+
+        function drawHeart(x, y, size, color) {
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            ctx.translate(x, y);
+            const topCurveHeight = size * 0.3;
+            ctx.moveTo(0, topCurveHeight);
+            ctx.bezierCurveTo(0, 0, -size / 2, 0, -size / 2, topCurveHeight);
+            ctx.bezierCurveTo(-size / 2, (size + topCurveHeight) / 2, 0, size, 0, size);
+            ctx.bezierCurveTo(0, size, size / 2, (size + topCurveHeight) / 2, size / 2, topCurveHeight);
+            ctx.bezierCurveTo(size / 2, 0, 0, 0, 0, topCurveHeight);
+            ctx.closePath();
+            ctx.fill();
+            ctx.translate(-x, -y);
+        }
+
+        // Initialize particles
+        for (let i = 0; i < 28; i++) floatingHearts.push(new FloatingHeart());
+        for (let i = 0; i < 5; i++) floatingTexts.push(new FloatingTextBubble());
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            floatingHearts.forEach(h => {
+                h.update();
+                h.draw();
+            });
+
+            floatingTexts.forEach(t => {
+                t.update();
+                t.draw();
+            });
+
+            requestAnimationFrame(animateCanvas);
+        }
+
+        window.onload = function() {
+            animateCanvas();
+        };
+    </script>
+</body>
+</html>
